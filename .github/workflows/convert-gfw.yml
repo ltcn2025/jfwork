@@ -23,10 +23,14 @@ jobs:
       run: |
         python3 convert_gfw_to_adblock.py
 
+    - name: Set up Git for pushing changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
     - name: Commit and push converted gfw-ok.txt
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
         git add gfw-ok.txt
         git commit -m "Update gfw-ok.txt"
         git push

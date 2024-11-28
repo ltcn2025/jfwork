@@ -1,0 +1,32 @@
+name: Convert GFW Rules
+
+on:
+  push:
+    paths:
+      - gfw-ok.txt       # 只在 gfw-ok.txt 被更新时触发
+  schedule:
+    - cron: '0 * * * *'  # 每小时运行一次
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download gfw.txt from GitHub
+      run: |
+        curl -O https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt
+
+    - name: Convert gfw.txt to gfw-ok.txt (Adblock Plus format)
+      run: |
+        python3 convert_gfw_to_adblock.py
+
+    - name: Commit and push converted gfw-ok.txt
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add gfw-ok.txt
+        git commit -m "Update gfw-ok.txt"
+        git push

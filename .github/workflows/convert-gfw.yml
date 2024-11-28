@@ -1,11 +1,10 @@
 name: Convert GFW Rules
 
 on:
-  push:
-    paths:
-      - gfw-ok.txt       # 只在 gfw-ok.txt 被更新时触发
   schedule:
-    - cron: '0 * * * *'  # 每小时运行一次
+    # 每小时运行一次，抓取最新的 gfw.txt 并进行转换
+    - cron: '0 * * * *'
+  workflow_dispatch:  # 允许手动触发工作流
 
 jobs:
   convert:

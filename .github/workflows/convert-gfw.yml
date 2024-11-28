@@ -3,7 +3,7 @@ name: Convert GFW Rules
 on:
   schedule:
     # 每小时运行一次，抓取最新的 gfw.txt 并进行转换
-    - cron: '0 * * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:  # 允许手动触发工作流
 
 jobs:

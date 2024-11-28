@@ -9,15 +9,40 @@ def normalize_domain(domain):
     domain = re.sub(r"^(www\d*\.)", "", domain)
     return domain
 
+def read_custom_file():
+    """
+    读取 custom.txt 文件并返回其中的规则内容。
+    """
+    try:
+        with open('custom.txt', 'r') as file:
+            lines = file.readlines()
+        return lines
+    except FileNotFoundError:
+        print("custom.txt not found, skipping custom rules.")
+        return []
+
+
 def convert_gfw_to_adblock():
     # 使用集合来存储唯一的规则
     unique_domains = set()
 
-    # 下载的 gfwlist.txt 文件路径
-    with open('gfw.txt', 'r') as file:
-        lines = file.readlines()
+    # 读取 custom.txt 和 gfw.txt 文件并合并
+    try:
+        with open('custom.txt', 'r') as custom_file:
+            custom_rules = custom_file.readlines()
+    except FileNotFoundError:
+        print("custom.txt not found, skipping custom rules.")
+        custom_rules = []
 
-    for line in lines:
+    # 读取 gfw.txt 文件
+    with open('gfw.txt', 'r') as file:
+        gfw_rules = file.readlines()
+
+    # 合并 custom.txt 和 gfw.txt 内容
+    all_rules = custom_rules + gfw_rules
+
+    # 处理合并后的所有规则
+    for line in all_rules:
         # 跳过注释行
         if line.startswith('#') or line.strip() == '':
             continue

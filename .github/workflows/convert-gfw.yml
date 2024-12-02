@@ -20,6 +20,16 @@ jobs:
       run: |
         curl -O https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt
 
+    # - name: Set up Python
+    #   uses: actions/setup-python@v4
+    #   with:
+    #     python-version: '3.9'  # 选择需要的 Python 版本
+
+    #- name: Install dependencies
+    #  run: |
+    #    python -m pip install --upgrade pip
+    #    pip install requests numpy  # 替换为你需要的模块
+
     - name: Convert gfw.txt to gfw-ok.txt (Adblock Plus format)
       run: |
         python3 convert_gfw_to_adblock.py

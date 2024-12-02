@@ -31,5 +31,6 @@ jobs:
     - name: Commit and push converted gfw-ok.txt
       run: |
         git add gfw-ok.txt
+        git add gfw-ok-base64.txt
         git commit -m "Update gfw-ok.txt"
         git push

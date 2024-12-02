@@ -1,7 +1,7 @@
 import re
 import base64
+import hashlib
 import textwrap
-#import urllib.parse
 
 
 def normalize_domain(domain):
@@ -25,6 +25,14 @@ def read_custom_file():
     except FileNotFoundError:
         print("custom.txt not found, skipping custom rules.")
         return []
+
+
+def calculate_checksum(content):
+    """
+    计算校验和，返回 '! Checksum: [checksum]'
+    """
+    checksum = hashlib.md5(content.encode('utf-8')).hexdigest()
+    return f"! Checksum: {checksum}"
 
 
 def convert_gfw_to_switchyomega():
@@ -64,13 +72,30 @@ def convert_gfw_to_switchyomega():
     # 生成规则文件内容
     rules = "\n".join(unique_domains)
 
-    # 写入 gfw-ok.txt 文件（规则原始格式）
+    # 计算校验和并添加到规则末尾
+    checksum = calculate_checksum(rules)
+    rules_with_checksum = f"{rules}\n{checksum}\n"
+
+    # 添加额外注释到规则文件开头和结尾
+    annotated_rules = (
+        "[AutoProxy 0.2.9]\n"
+        "! Checksum: Placeholder\n"
+        "! Title: GFWList4LL\n"
+        "! Last Modified: Placeholder Date\n"
+        "! HomePage: https://github.com/gfwlist/gfwlist\n"
+        "! License: https://www.gnu.org/licenses/gpl-2.0.txt\n"
+        f"{rules_with_checksum}"
+        "!------------EOF------------\n"
+    )
+
+    # 写入 gfw-ok.txt 文件（规则原始格式，带注释）
     with open('gfw-ok.txt', 'w') as file:
-        file.write(rules)
+        file.write(annotated_rules)
 
     # 使用 Base64 编码规则内容
-    base64_rules = base64.b64encode(rules.encode('utf-8')).decode('utf-8')
-    # 按 76 个字符一行分割 Base64 编码的内容
+    base64_rules = base64.b64encode(annotated_rules.encode('utf-8')).decode('utf-8')
+
+    # 按 64 个字符一行分割 Base64 编码的内容
     formatted_base64_rules = "\n".join(textwrap.wrap(base64_rules, 64))
 
     # 写入 base64 格式文件

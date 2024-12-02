@@ -1,5 +1,6 @@
 import re
 import base64
+import urllib.parse
 
 
 def normalize_domain(domain):
@@ -62,12 +63,11 @@ def convert_gfw_to_switchyomega():
     # 生成规则文件内容
     rules = "\n".join(unique_domains)
 
-    # Base64 编码（SwitchyOmega 支持 base64 格式的 PAC 文件）
-    base64_rules = base64.b64encode(rules.encode('utf-8')).decode('utf-8')
-
     # 写入 gfw-ok.txt 文件（规则原始格式）
     with open('gfw-ok.txt', 'w') as file:
         file.write(rules)
+
+    base64_rules = urllib.parse.quote(rules)
 
     # 写入 base64 格式文件
     with open('gfw-ok-base64.txt', 'w') as file:

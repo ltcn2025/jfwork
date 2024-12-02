@@ -1,4 +1,6 @@
 import re
+import base64
+
 
 def normalize_domain(domain):
     """
@@ -8,6 +10,7 @@ def normalize_domain(domain):
     # 去掉常见的子域名（如 www, www1）
     domain = re.sub(r"^(www\d*\.)", "", domain)
     return domain
+
 
 def read_custom_file():
     """
@@ -22,17 +25,12 @@ def read_custom_file():
         return []
 
 
-def convert_gfw_to_adblock():
+def convert_gfw_to_switchyomega():
     # 使用集合来存储唯一的规则
     unique_domains = set()
 
-    # 读取 custom.txt 和 gfw.txt 文件并合并
-    try:
-        with open('custom.txt', 'r') as custom_file:
-            custom_rules = custom_file.readlines()
-    except FileNotFoundError:
-        print("custom.txt not found, skipping custom rules.")
-        custom_rules = []
+    # 读取 custom.txt 文件
+    custom_rules = read_custom_file()
 
     # 读取 gfw.txt 文件
     with open('gfw.txt', 'r') as file:
@@ -54,17 +52,27 @@ def convert_gfw_to_adblock():
         if line.startswith('||'):
             domain = line[2:]  # 去掉前缀 || 
             normalized_domain = normalize_domain(domain)  # 标准化域名
-            unique_domains.add(f"||{normalized_domain}$")
+            unique_domains.add(f"||{normalized_domain}")
         else:
             # 对其他规则进行处理，去掉协议部分（http:// 或 https://）
             domain = re.sub(r"^https?://", "", line)
             normalized_domain = normalize_domain(domain)  # 标准化域名
-            unique_domains.add(f"||{normalized_domain}$")
+            unique_domains.add(f"||{normalized_domain}")
 
-    # 将去重后的规则一次性写入 gfw-ok.txt 文件
+    # 生成规则文件内容
+    rules = "\n".join(unique_domains)
+
+    # Base64 编码（SwitchyOmega 支持 base64 格式的 PAC 文件）
+    base64_rules = base64.b64encode(rules.encode('utf-8')).decode('utf-8')
+
+    # 写入 gfw-ok.txt 文件（规则原始格式）
     with open('gfw-ok.txt', 'w') as file:
-        for domain in unique_domains:
-            file.write(f"{domain}\n")
+        file.write(rules)
+
+    # 写入 base64 格式文件
+    with open('gfw-ok-base64.txt', 'w') as file:
+        file.write(base64_rules)
+
 
 if __name__ == "__main__":
-    convert_gfw_to_adblock()
+    convert_gfw_to_switchyomega()

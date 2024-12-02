@@ -1,6 +1,6 @@
 import re
 import base64
-import urllib.parse
+#import urllib.parse
 
 
 def normalize_domain(domain):
@@ -67,7 +67,8 @@ def convert_gfw_to_switchyomega():
     with open('gfw-ok.txt', 'w') as file:
         file.write(rules)
 
-    base64_rules = urllib.parse.quote(rules)
+    # 使用 Base64 编码规则内容
+    base64_rules = base64.b64encode(rules.encode('utf-8')).decode('utf-8')
 
     # 写入 base64 格式文件
     with open('gfw-ok-base64.txt', 'w') as file:

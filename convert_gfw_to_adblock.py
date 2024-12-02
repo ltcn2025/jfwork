@@ -69,6 +69,8 @@ def convert_gfw_to_switchyomega():
 
     # 使用 Base64 编码规则内容
     base64_rules = base64.b64encode(rules.encode('utf-8')).decode('utf-8')
+    # 按 76 个字符一行分割 Base64 编码的内容
+    formatted_base64_rules = "\n".join(textwrap.wrap(base64_rules, 76))
 
     # 写入 base64 格式文件
     with open('gfw-ok-base64.txt', 'w') as file:

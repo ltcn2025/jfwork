@@ -75,7 +75,7 @@ def convert_gfw_to_switchyomega():
 
     # 写入 base64 格式文件
     with open('gfw-ok-base64.txt', 'w') as file:
-        file.write(base64_rules)
+        file.write(formatted_base64_rules)
 
 
 if __name__ == "__main__":
